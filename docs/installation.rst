@@ -11,7 +11,7 @@ Get MongoDB::
 
 Get the code::
 
-    pip install django-mongonaut==0.2.17
+    pip install django-mongonaut==0.2.18
     
 Install the dependency in your settings file (settings.py):
 
@@ -59,7 +59,7 @@ If you need to point to another location, then you can change the following defa
     # settings.py defaults
     MONGONAUT_JQUERY = "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
     MONGONAUT_TWITTER_BOOTSTRAP = "http://twitter.github.com/bootstrap/assets/css/bootstrap.css"
-    MONGONAUT_TWITTER_BOOTSTRAP_ALERT = http://twitter.github.com/bootstrap/assets/js/bootstrap-alert.js"
+    MONGONAUT_TWITTER_BOOTSTRAP_ALERT = "http://twitter.github.com/bootstrap/assets/js/bootstrap-alert.js"
     
 
 Heroku MongoDB connection via MongoLabs

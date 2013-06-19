@@ -3,6 +3,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.http import HttpResponseForbidden
+from django.shortcuts import redirect
 from django.utils.importlib import import_module
 from mongoengine.fields import EmbeddedDocumentField
 
@@ -29,6 +30,12 @@ class AppStore(object):
 
 
 class MongonautViewMixin(object):
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated():
+            return redirect(settings.LOGIN_URL or '/')
+        return super(MongonautViewMixin, self).get(request, *args, **kwargs)
+
 
     def render_to_response(self, context, **response_kwargs):
         if hasattr(self, 'permission') and self.permission not in context:
