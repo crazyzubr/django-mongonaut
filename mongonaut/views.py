@@ -17,7 +17,6 @@ from mongoengine.fields import EmbeddedDocumentField, ListField
 from mongonaut.forms import MongoModelForm
 from mongonaut.mixins import MongonautFormViewMixin
 from mongonaut.mixins import MongonautViewMixin
-from mongonaut.sites import BaseMongoAdmin
 from mongonaut.utils import is_valid_object_id
 
 
@@ -32,12 +31,7 @@ class IndexView(MongonautViewMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-        mongoadmin = BaseMongoAdmin()
-        context['has_view_permission'] = mongoadmin.has_view_permission(self.request)
-        context['has_edit_permission'] = mongoadmin.has_edit_permission(self.request)
-        context['has_add_permission'] = mongoadmin.has_add_permission(self.request)
-        context['has_delete_permission'] = mongoadmin.has_delete_permission(self.request)
-        return context
+        return self.set_permissions_in_context(context)
 
 
 class AppListView(MongonautViewMixin, ListView):
@@ -162,7 +156,7 @@ class DocumentListView(MongonautViewMixin, FormView):
             context['keys'] = ['id', ]
 
             # Show those items for which we've got list_fields on the mongoadmin
-            for key in [x for x in self.document._fields.keys() if x != 'id' and x in self.mongoadmin.list_fields]:
+            for key in [x for x in self.mongoadmin.list_fields if x != 'id' and x in self.document._fields.keys()]:
 
                 # TODO - Figure out why this EmbeddedDocumentField and ListField breaks this view
                 # Note - This is the challenge part, right? :)

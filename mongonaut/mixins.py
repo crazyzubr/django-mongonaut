@@ -11,8 +11,11 @@ from mongonaut.exceptions import NoMongoAdminSpecified
 from mongonaut.forms import MongoModelForm
 from mongonaut.forms.form_utils import has_digit
 from mongonaut.forms.form_utils import make_key
+from mongonaut.sites import BaseMongoAdmin, AllPermBaseMongoAdmin
 from mongonaut.utils import translate_value
 from mongonaut.utils import trim_field_key
+
+MONGONAUT_ONLY_AUTH = getattr(settings, "MONGONAUT_ONLY_AUTH", False)
 
 
 class AppStore(object):
@@ -32,10 +35,9 @@ class AppStore(object):
 class MongonautViewMixin(object):
 
     def get(self, request, *args, **kwargs):
-        if getattr(settings, "MONGONAUT_ONLY_AUTH", False) and not request.user.is_authenticated():
+        if MONGONAUT_ONLY_AUTH and not request.user.is_authenticated():
             return redirect(settings.LOGIN_URL or '/')
         return super(MongonautViewMixin, self).get(request, *args, **kwargs)
-
 
     def render_to_response(self, context, **response_kwargs):
         if hasattr(self, 'permission') and self.permission not in context:
@@ -108,10 +110,17 @@ class MongonautViewMixin(object):
     def set_permissions_in_context(self, context={}):
         """ Provides permissions for mongoadmin for use in the context"""
 
-        context['has_view_permission'] = self.mongoadmin.has_view_permission(self.request)
-        context['has_edit_permission'] = self.mongoadmin.has_edit_permission(self.request)
-        context['has_add_permission'] = self.mongoadmin.has_add_permission(self.request)
-        context['has_delete_permission'] = self.mongoadmin.has_delete_permission(self.request)
+        if hasattr(self, 'mongoadmin'):
+            mongoadmin = self.mongoadmin
+        elif MONGONAUT_ONLY_AUTH:
+            mongoadmin = BaseMongoAdmin()
+        else:
+            mongoadmin = AllPermBaseMongoAdmin()
+
+        context['has_view_permission'] = mongoadmin.has_view_permission(self.request)
+        context['has_edit_permission'] = mongoadmin.has_edit_permission(self.request)
+        context['has_add_permission'] = mongoadmin.has_add_permission(self.request)
+        context['has_delete_permission'] = mongoadmin.has_delete_permission(self.request)
         return context
 
 

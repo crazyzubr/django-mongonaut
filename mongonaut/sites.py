@@ -53,6 +53,25 @@ class BaseMongoAdmin(object):
         return request.user.is_authenticated() and request.user.is_active and request.user.is_superuser
 
 
+class AllPermBaseMongoAdmin(BaseMongoAdmin):
+    """
+    Override permission methods (everything is permitted)
+    """
+
+    def has_view_permission(self, request):
+        return True
+
+    def has_edit_permission(self, request):
+        return True
+
+    def has_add_permission(self, request):
+        return True
+
+    def has_delete_permission(self, request):
+        return True
+
+
+
 class MongoAdmin(BaseMongoAdmin):
 
     list_display = ('__str__',)
