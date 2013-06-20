@@ -32,7 +32,7 @@ class AppStore(object):
 class MongonautViewMixin(object):
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated():
+        if getattr(settings, "MONGONAUT_ONLY_AUTH", False) and not request.user.is_authenticated():
             return redirect(settings.LOGIN_URL or '/')
         return super(MongonautViewMixin, self).get(request, *args, **kwargs)
 
@@ -41,12 +41,7 @@ class MongonautViewMixin(object):
         if hasattr(self, 'permission') and self.permission not in context:
             return HttpResponseForbidden("You do not have permissions to access this content.")
 
-        return self.response_class(
-            request=self.request,
-            template=self.get_template_names(),
-            context=context,
-            **response_kwargs
-        )
+        return super(MongonautViewMixin, self).render_to_response(context, **response_kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(MongonautViewMixin, self).get_context_data(**kwargs)

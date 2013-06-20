@@ -35,7 +35,7 @@ Get mongoengine (and pymongo):
 
 Get the code::
 
-    pip install django-mongonaut==0.2.17
+    pip install django-mongonaut==0.2.18
     
 Install the dependency in your settings.py::
 
