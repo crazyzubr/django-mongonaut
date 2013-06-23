@@ -2,6 +2,7 @@
 
 from django.conf import settings
 from django.contrib import messages
+from django.forms.util import ErrorList
 from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 from django.utils.encoding import smart_str
@@ -168,9 +169,16 @@ class MongonautFormViewMixin(object):
 
                 try:
                     self.new_document.save()
-                except DocumentValidationError, error:
-                    messages.error(self.request, smart_str(error.errors or error))
+                except DocumentValidationError, e:
                     success_message = False
+
+                    if e.errors:
+                        messages.error(self.request, u"Failed to save document")
+                        for field_name, error in e.errors.items():
+                            self.form._errors[field_name] = ErrorList([smart_str(error)])
+                    else:
+                        messages.error(self.request, smart_str(e))
+
 
                 if success_message:
                     messages.success(self.request, success_message)
