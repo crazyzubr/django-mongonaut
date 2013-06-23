@@ -169,7 +169,7 @@ class MongonautFormViewMixin(object):
                 try:
                     self.new_document.save()
                 except DocumentValidationError, error:
-                    messages.error(self.request, smart_str(error))
+                    messages.error(self.request, smart_str(error.errors or error))
                     success_message = False
 
                 if success_message:
