@@ -5,8 +5,9 @@ from django.contrib import messages
 from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 from django.utils.importlib import import_module
+from django.forms import ValidationError
 from mongoengine.fields import EmbeddedDocumentField
-from mongoengine.errors import ValidationError as DocumentValidationError, ValidationError
+from mongoengine.errors import ValidationError as DocumentValidationError
 
 from mongonaut.exceptions import NoMongoAdminSpecified
 from mongonaut.forms import MongoModelForm
