@@ -4,8 +4,8 @@ from django.conf import settings
 from django.contrib import messages
 from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
+from django.utils.encoding import smart_str
 from django.utils.importlib import import_module
-from django.forms import ValidationError
 from mongoengine.fields import EmbeddedDocumentField
 from mongoengine.errors import ValidationError as DocumentValidationError
 
@@ -169,7 +169,8 @@ class MongonautFormViewMixin(object):
                 try:
                     self.new_document.save()
                 except DocumentValidationError, error:
-                    raise ValidationError(error)
+                    messages.error(self.request, smart_str(error))
+                    success_message = False
 
                 if success_message:
                     messages.success(self.request, success_message)
