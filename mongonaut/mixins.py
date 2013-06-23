@@ -175,9 +175,11 @@ class MongonautFormViewMixin(object):
                     if e.errors:
                         messages.error(self.request, u"Failed to save document")
                         for field_name, error in e.errors.items():
-                            self.form._errors[field_name] = ErrorList([smart_str(error)])
+                            self.form._errors[field_name] = self.form.error_class(smart_str(error.message))
+                            if field_name in self.form.cleaned_data:
+                                del self.form.cleaned_data[field_name]
                     else:
-                        messages.error(self.request, smart_str(e))
+                        messages.error(self.request, smart_str(e.message))
 
 
                 if success_message:
