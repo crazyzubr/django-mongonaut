@@ -24,7 +24,7 @@ class BaseMongoAdmin(object):
     fields = None
     exclude = None
     fieldsets = None
-    form = forms.ModelForm
+    # form = forms.ModelForm
     filter_vertical = ()
     filter_horizontal = ()
     radio_fields = {}
