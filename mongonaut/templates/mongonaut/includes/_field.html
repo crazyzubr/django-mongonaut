@@ -8,7 +8,7 @@
     <div class="input">
         {{ field }}
         {% if field.errors %}
-            <span class="help-block error">
+            <span class="help-block alert-error">
                 {% for error in field.errors %}
                     {{ error }}
                 {% endfor %}
