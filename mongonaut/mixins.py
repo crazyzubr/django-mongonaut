@@ -2,13 +2,12 @@
 
 from django.conf import settings
 from django.contrib import messages
-from django.forms.util import ErrorList
 from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
-from django.utils.encoding import smart_str
 from django.utils.importlib import import_module
 from mongoengine.fields import EmbeddedDocumentField
 from mongoengine.errors import ValidationError as DocumentValidationError
+from mongodbforms import DocumentForm
 
 from mongonaut.exceptions import NoMongoAdminSpecified
 from mongonaut.forms import MongoModelForm
@@ -133,6 +132,11 @@ class MongonautFormViewMixin(object):
     Must define self.document_type for process_post_form to work.
     """
 
+    def _model_to_documentform(self, model):
+        meta = type('Meta', (), dict(document=model))
+        docform_class = type('documentform', (DocumentForm,), {'Meta': meta})
+        return docform_class
+
     def process_post_form(self, success_message=None):
         """
         As long as the form is set on the view this method will validate the form
@@ -144,6 +148,7 @@ class MongonautFormViewMixin(object):
         # When on initial args are given we need to set the base document.
         if not hasattr(self, 'document') or self.document is None:
             self.document = self.document_type()
+        form = self.form
         self.form = MongoModelForm(model=self.document_type, instance=self.document,
                                    form_post_data=self.request.POST).get_form()
         self.form.is_bound = True
@@ -190,7 +195,7 @@ class MongonautFormViewMixin(object):
                 if success_message:
                     messages.success(self.request, success_message)
 
-        return self.form
+        return form
 
     def process_document(self, document, form_key, passed_key):
         """

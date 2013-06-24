@@ -37,6 +37,6 @@ setup(
     license='MIT',
     packages=find_packages(exclude=['examples']),
     include_package_data=True,
-    install_requires=['mongoengine>=0.5.2'],
+    install_requires=['mongoengine>=0.5.2', 'mongodbforms>=0.1.5'],
     zip_safe=False,
 )

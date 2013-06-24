@@ -1,8 +1,8 @@
 ================
-django-mongonaut
+django-mongonaut - Fork under development (hard)
 ================
 :Info: An introspective interface for Django and MongoDB.
-:Version: 0.2.17
+:Version: 0.2.18
 :Author: Daniel Greenfeld (http://pydanny.com)
 
 About

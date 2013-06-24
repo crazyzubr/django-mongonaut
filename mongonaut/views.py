@@ -14,7 +14,6 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 from mongoengine.fields import EmbeddedDocumentField, ListField
 
-from mongonaut.forms import MongoModelForm
 from mongonaut.mixins import MongonautFormViewMixin
 from mongonaut.mixins import MongonautViewMixin
 from mongonaut.utils import is_valid_object_id
@@ -221,7 +220,7 @@ class DocumentEditFormView(MongonautViewMixin, FormView, MongonautFormViewMixin)
     """ :args: <app_label> <document_name> <id> """
 
     template_name = "mongonaut/document_edit_form.html"
-    form_class = Form
+    # form_class = Form
     success_url = '/'
     permission = 'has_edit_permission'
 
@@ -259,12 +258,12 @@ class DocumentEditFormView(MongonautViewMixin, FormView, MongonautFormViewMixin)
             self.document = self.document_type.objects.get(pk=self.ident)
         except self.document_type.DoesNotExist:
             raise Http404
-        self.form = Form()
+
+        self.form = getattr(self.mongoadmin, 'form', self._model_to_documentform(self.document_type))\
+                (instance=self.document, data=self.request.POST or None)
 
         if self.request.method == 'POST':
             self.form = self.process_post_form('Your changes have been saved.')
-        else:
-            self.form = MongoModelForm(model=self.document_type, instance=self.document).get_form()
         return self.form
 
 
@@ -272,7 +271,7 @@ class DocumentAddFormView(MongonautViewMixin, FormView, MongonautFormViewMixin):
     """ :args: <app_label> <document_name> <id> """
 
     template_name = "mongonaut/document_add_form.html"
-    form_class = Form
+    # form_class = Form
     success_url = '/'
     permission = 'has_add_permission'
 
@@ -298,14 +297,16 @@ class DocumentAddFormView(MongonautViewMixin, FormView, MongonautFormViewMixin):
         return context
 
     def get_form(self, Form):
+        self.set_mongoadmin()
         self.set_mongonaut_base()
         self.document_type = getattr(self.models, self.document_name)
-        self.form = Form()
+        self.form = getattr(self.mongoadmin, 'form', self._model_to_documentform(self.document_type))\
+                (data=self.request.POST or None)
 
         if self.request.method == 'POST':
             self.form = self.process_post_form('Your new document has been added and saved.')
-        else:
-            self.form = MongoModelForm(model=self.document_type).get_form()
+        # else:
+        #     self.form = MongoModelForm(model=self.document_type).get_form()
         return self.form
 
 
